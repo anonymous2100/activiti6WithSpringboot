@@ -17,14 +17,22 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * @ClassName: TestController
+ * @Description: 测试用的
+ * @author lh2
+ * @date 2020年4月27日 上午11:36:40
+ */
 @Controller
 @RequestMapping("")
 public class TestController
@@ -35,6 +43,12 @@ public class TestController
 	ProcessEngine processEngine;
 	@Autowired
 	ObjectMapper objectMapper;
+
+	@GetMapping("editor")
+	public String test()
+	{
+		return "/modeler";
+	}
 
 	/**
 	 * 新建一个空模型
@@ -105,6 +119,30 @@ public class TestController
 		return "redirect:/modelist";
 	}
 
+	@ResponseBody
+	@GetMapping(value = "/deleteDeploy")
+	public void deleteDeploy(@RequestParam(name = "id") String id)
+	{
+		repositoryService.deleteDeployment(id);
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/flowList")
+	public List<Model> listFlow()
+	{
+		List<Model> flowList = repositoryService.createModelQuery()
+				.list();
+		return flowList;
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/flowDelete")
+	public void flowDelete(@RequestParam(name = "id") String id)
+	{
+		System.out.println("id = " + id);
+		repositoryService.deleteModel(id);
+	}
+
 	/**
 	 * 发布模型为流程定义
 	 */
@@ -112,7 +150,6 @@ public class TestController
 	@ResponseBody
 	public Object deploy(String modelId) throws Exception
 	{
-
 		// 获取模型
 		RepositoryService repositoryService = processEngine.getRepositoryService();
 		Model modelData = repositoryService.getModel(modelId);
