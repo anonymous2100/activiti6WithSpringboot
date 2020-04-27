@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ctgu.common.ResultMsg;
 import com.ctgu.service.ActivitiService;
 import com.ctgu.service.ImageService;
+import com.ctgu.vo.input.ModelVO;
 import com.ctgu.vo.output.HistoricActivityInstanceVO;
 import com.ctgu.vo.output.ImageVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -65,16 +67,20 @@ public class ActivitiController
 
 	// 1.模型管理 ：在线流程设计器创建模型、删除模型、部署流程、预览流程xml、导出xml、导出json
 	// 模型创建
-	@GetMapping("/model/create")
-	public void modelCreate(HttpServletResponse response) throws Exception
+	@PostMapping("/model/create")
+	public ResultMsg modelCreate(ModelVO modelVO) throws Exception
 	{
 		// 初始化一个空模型
 		Model model = repositoryService.newModel();
 		// 设置一些默认信息
-		String name = "newProcess";
-		String description = "";
-		int revision = 1;
-		String key = "process";
+		// String name = "newProcess";
+		// String description = "";
+		// int revision = 1;
+		// String key = "process";
+		String name = modelVO.getProcessName();
+		String description = modelVO.getProcessDescription();
+		int revision = modelVO.getProcessRevision();
+		String key = modelVO.getProcessKey();
 
 		ObjectNode modelNode = objectMapper.createObjectNode();
 		modelNode.put(ModelDataJsonConstants.MODEL_NAME, name);
@@ -97,7 +103,11 @@ public class ActivitiController
 		editorNode.set("stencilset", stencilSetNode);
 		repositoryService.addModelEditorSource(id, editorNode.toString()
 				.getBytes("utf-8"));
-		response.sendRedirect("/modeler.html?modelId=" + id);
+		// response.sendRedirect("/modeler.html?modelId=" + id);
+
+		List<Model> modelList = activitiService.getModelList();
+
+		return ResultMsg.success(modelList);
 	}
 
 	// 模型删除
@@ -110,7 +120,7 @@ public class ActivitiController
 	}
 
 	// 获取模型列表
-	@GetMapping("/mode/list")
+	@GetMapping("/model/list")
 	public ResultMsg modelList()
 	{
 		List<Model> modelList = activitiService.getModelList();

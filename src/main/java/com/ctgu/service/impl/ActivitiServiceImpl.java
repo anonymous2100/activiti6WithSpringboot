@@ -2,7 +2,6 @@ package com.ctgu.service.impl;
 
 import java.util.List;
 
-import org.activiti.engine.DynamicBpmnService;
 import org.activiti.engine.FormService;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
@@ -15,9 +14,11 @@ import org.activiti.engine.repository.Model;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ctgu.service.ActivitiService;
 
+@Service
 public class ActivitiServiceImpl implements ActivitiService
 {
 	@Autowired
@@ -28,14 +29,14 @@ public class ActivitiServiceImpl implements ActivitiService
 	private TaskService taskService;
 	@Autowired
 	private HistoryService historyService;
-	@Autowired
-	private ManagementService managementService;
-	@Autowired
-	private IdentityService identityService;
-	@Autowired
-	private FormService formService;
-	@Autowired
-	private DynamicBpmnService dynamicBpmnService;
+	// @Autowired
+	// private ManagementService managementService;
+	// @Autowired
+	// private IdentityService identityService;
+	// @Autowired
+	// private FormService formService;
+	// @Autowired
+	// private DynamicBpmnService dynamicBpmnService;
 
 	/**
 	 * 历史活动节点查询，开发之中这个用的最多,针对是某一个完整的过程

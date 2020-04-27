@@ -20,7 +20,6 @@ import java.io.InputStream;
  * @author Tijs Rademakers
  */
 @RestController
-@RequestMapping("service")
 public class StencilsetRestResource
 {
 	@RequestMapping(value = "/editor/stencilset", method = RequestMethod.GET,

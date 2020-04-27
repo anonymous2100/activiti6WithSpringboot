@@ -1,14 +1,9 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+ * applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package org.activiti.rest.editor.model;
 
@@ -35,54 +30,56 @@ import java.io.InputStream;
  * @author Tijs Rademakers
  */
 @RestController
-@RequestMapping("service")
-public class ModelSaveRestResource implements ModelDataJsonConstants {
-  
-  protected static final Logger LOGGER = LoggerFactory.getLogger(org.activiti.rest.editor.model.ModelSaveRestResource.class);
+public class ModelSaveRestResource implements ModelDataJsonConstants
+{
+	protected static final Logger LOGGER = LoggerFactory
+			.getLogger(org.activiti.rest.editor.model.ModelSaveRestResource.class);
 
-  @Autowired
-  private RepositoryService repositoryService;
-  
-  @Autowired
-  private ObjectMapper objectMapper;
-  
-  @RequestMapping(value="/model/{modelId}/save", method = RequestMethod.PUT)
-  @ResponseStatus(value = HttpStatus.OK)
-  public void saveModel(@PathVariable String modelId
-          , String name, String description
-          , String json_xml, String svg_xml) {
-    try {
-      
-      Model model = repositoryService.getModel(modelId);
-      
-      ObjectNode modelJson = (ObjectNode) objectMapper.readTree(model.getMetaInfo());
-      
-      modelJson.put(MODEL_NAME, name);
-      modelJson.put(MODEL_DESCRIPTION, description);
-      model.setMetaInfo(modelJson.toString());
-      model.setName(name);
-      
-      repositoryService.saveModel(model);
-      
-      repositoryService.addModelEditorSource(model.getId(), json_xml.getBytes("utf-8"));
-      
-      InputStream svgStream = new ByteArrayInputStream(svg_xml.getBytes("utf-8"));
-      TranscoderInput input = new TranscoderInput(svgStream);
-      
-      PNGTranscoder transcoder = new PNGTranscoder();
-      // Setup output
-      ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-      TranscoderOutput output = new TranscoderOutput(outStream);
-      
-      // Do the transformation
-      transcoder.transcode(input, output);
-      final byte[] result = outStream.toByteArray();
-      repositoryService.addModelEditorSourceExtra(model.getId(), result);
-      outStream.close();
-      
-    } catch (Exception e) {
-      LOGGER.error("Error saving model", e);
-      throw new ActivitiException("Error saving model", e);
-    }
-  }
+	@Autowired
+	private RepositoryService repositoryService;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@RequestMapping(value = "/model/{modelId}/save", method = RequestMethod.PUT)
+	@ResponseStatus(value = HttpStatus.OK)
+	public void saveModel(@PathVariable String modelId, String name, String description, String json_xml,
+			String svg_xml)
+	{
+		try
+		{
+			Model model = repositoryService.getModel(modelId);
+
+			ObjectNode modelJson = (ObjectNode) objectMapper.readTree(model.getMetaInfo());
+
+			modelJson.put(MODEL_NAME, name);
+			modelJson.put(MODEL_DESCRIPTION, description);
+			model.setMetaInfo(modelJson.toString());
+			model.setName(name);
+
+			repositoryService.saveModel(model);
+
+			repositoryService.addModelEditorSource(model.getId(), json_xml.getBytes("utf-8"));
+
+			InputStream svgStream = new ByteArrayInputStream(svg_xml.getBytes("utf-8"));
+			TranscoderInput input = new TranscoderInput(svgStream);
+
+			PNGTranscoder transcoder = new PNGTranscoder();
+			// Setup output
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			TranscoderOutput output = new TranscoderOutput(outStream);
+
+			// Do the transformation
+			transcoder.transcode(input, output);
+			final byte[] result = outStream.toByteArray();
+			repositoryService.addModelEditorSourceExtra(model.getId(), result);
+			outStream.close();
+
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("Error saving model", e);
+			throw new ActivitiException("Error saving model", e);
+		}
+	}
 }
